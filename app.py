@@ -36,6 +36,7 @@ class app:
         if self.settings['update_ufw']:
             self.update_ufw_ipv4()
             self.update_ufw_ipv6()
+        logging.info('execution done - check for errors :)')
 
     def update_asn_lists(self):
         logging.info('updating asn lists')
@@ -134,35 +135,42 @@ class app:
         logging.info('updating ipv4 ufw rules')
         # remove old rules
         logging.info('removing old ipv4 ufw rules')
-        with open(self.settings['path_to_ufw_ipv4_user_config'], 'r') as file:
-            for line in file:
-                line = line.strip()
-                # find old rules and remove this line and the next line
-                if self.comment_for_deny_rule in line or self.comment_for_allow_rule in line:
-                    ignore_next_line = True
-                    continue
-                # ignore next line
-                if ignore_next_line:
-                    ignore_next_line = False
-                    continue
-                # ignore multiple empty lines
-                if not line and not last_line_was_empty:
-                    last_line_was_empty = True
-                elif not line and last_line_was_empty:
-                    continue
-                else:
-                    last_line_was_empty = False
-                new_file.append(line)
+        try:
+            with open(self.settings['path_to_ufw_ipv4_user_config'], 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    # find old rules and remove this line and the next line
+                    if self.comment_for_deny_rule in line or self.comment_for_allow_rule in line:
+                        ignore_next_line = True
+                        continue
+                    # ignore next line
+                    if ignore_next_line:
+                        ignore_next_line = False
+                        continue
+                    # ignore multiple empty lines
+                    if not line and not last_line_was_empty:
+                        last_line_was_empty = True
+                    elif not line and last_line_was_empty:
+                        continue
+                    else:
+                        last_line_was_empty = False
+                    new_file.append(line)
+        except Exception as exc:
+            logging.error('could not read old ipv4 ufw rules: %s', exc)
+            return
         # write new rules
         logging.info('writing new ipv4 ufw rules')
-        with open(self.settings['path_to_ufw_ipv4_user_config'], 'w') as file:
-            for line in new_file:
-                file.write(line + '\n')
-                # check if rules section has begun and add our user.rules file content
-                if '### RULES ###' in line:
-                    with open('user.rules', 'r') as user_file:
-                        for user_line in user_file:
-                            file.write(user_line)
+        try:
+            with open(self.settings['path_to_ufw_ipv4_user_config'], 'w') as file:
+                for line in new_file:
+                    file.write(line + '\n')
+                    # check if rules section has begun and add our user.rules file content
+                    if '### RULES ###' in line:
+                        with open('user.rules', 'r') as user_file:
+                            for user_line in user_file:
+                                file.write(user_line)
+        except Exception as exc:
+            logging.error('could not write new ipv4 ufw rules: %s', exc)
 
     def update_ufw_ipv6(self):
         ignore_next_line = False
@@ -172,35 +180,42 @@ class app:
         logging.info('updating ipv6 ufw rules')
         # remove old rules
         logging.info('removing old ipv6 ufw rules')
-        with open(self.settings['path_to_ufw_ipv6_user_config'], 'r') as file:
-            for line in file:
-                line = line.strip()
-                # find old rules and remove this line and the next line
-                if self.comment_for_deny_rule in line or self.comment_for_allow_rule in line:
-                    ignore_next_line = True
-                    continue
-                # ignore next line
-                if ignore_next_line:
-                    ignore_next_line = False
-                    continue
-                # ignore multiple empty lines
-                if not line and not last_line_was_empty:
-                    last_line_was_empty = True
-                elif not line and last_line_was_empty:
-                    continue
-                else:
-                    last_line_was_empty = False
-                new_file.append(line)
+        try:
+            with open(self.settings['path_to_ufw_ipv6_user_config'], 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    # find old rules and remove this line and the next line
+                    if self.comment_for_deny_rule in line or self.comment_for_allow_rule in line:
+                        ignore_next_line = True
+                        continue
+                    # ignore next line
+                    if ignore_next_line:
+                        ignore_next_line = False
+                        continue
+                    # ignore multiple empty lines
+                    if not line and not last_line_was_empty:
+                        last_line_was_empty = True
+                    elif not line and last_line_was_empty:
+                        continue
+                    else:
+                        last_line_was_empty = False
+                    new_file.append(line)
+        except Exception as exc:
+            logging.error('could not read old ipv6 ufw rules: %s', exc)
+            return
         # write new rules
         logging.info('writing new ipv6 ufw rules')
-        with open(self.settings['path_to_ufw_ipv6_user_config'], 'w') as file:
-            for line in new_file:
-                file.write(line + '\n')
-                # check if rules section has begun and add our user.rules file content
-                if '### RULES ###' in line:
-                    with open('user6.rules', 'r') as user_file:
-                        for user_line in user_file:
-                            file.write(user_line)
+        try:
+            with open(self.settings['path_to_ufw_ipv6_user_config'], 'w') as file:
+                for line in new_file:
+                    file.write(line + '\n')
+                    # check if rules section has begun and add our user.rules file content
+                    if '### RULES ###' in line:
+                        with open('user6.rules', 'r') as user_file:
+                            for user_line in user_file:
+                                file.write(user_line)
+        except Exception as exc:
+            logging.error('could not write new ipv6 ufw rules: %s', exc)
 
     def _print_welcome(self):
         logging.info('')
