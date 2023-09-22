@@ -4,6 +4,7 @@ import urllib.request
 import yaml
 import os
 import time
+import re
 
 
 class app:
@@ -55,7 +56,10 @@ class app:
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
                         try:
-                            asn = line.strip().split(',')[item['column']]
+                            asn = re.sub(
+                                r'\W+', '', line.strip().split(',')[
+                                    item['column']]
+                            )
                         except:
                             logging.error('could not parse line: %s', line)
                         # download asn
@@ -79,7 +83,10 @@ class app:
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
                         try:
-                            asn = line.strip().split(',')[item['column']]
+                            asn = re.sub(
+                                r'\W+', '', line.strip().split(',')[
+                                    item['column']]
+                            )
                         except:
                             logging.error('could not parse line: %s', line)
                         # download asn
