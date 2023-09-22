@@ -234,13 +234,13 @@ class app:
         )
 
     def _load_settings(self):
-        logging.info('loading settings from %s', self.settings_path)
-        with open("settings.yaml", "r") as stream:
-            try:
+        try:
+            logging.info('loading settings from %s', self.settings_path)
+            with open("settings.yaml", "r") as stream:
                 self.settings = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                logging.error('could not load settings: %s', exc)
-                quit()
+        except Exception as exc:
+            logging.error('could not load settings: %s', exc)
+            quit()
 
     def _create_folder(self):
         for folder in self.temporary_folders:
