@@ -5,9 +5,6 @@ file_cache_time: 168 # caching time in hours before fetching again
 update_ufw: true
 path_to_ufw_ipv4_user_config: /etc/ufw/user.rules
 path_to_ufw_ipv6_user_config: /etc/ufw/user6.rules
-# single asn settings
-asn_allowed: []
-asn_denied: []
 # asn list settings
 asn_allow_lists: []
 asn_deny_lists:
@@ -15,9 +12,12 @@ asn_deny_lists:
     type: csv # type (csv)
     column: 0 # column to read (0 = first column)
     url: https://raw.githubusercontent.com/brianhama/bad-asn-list/master/bad-asn-list.csv # url to fetch
-# single ip settings
-ip_allowed: []
-ip_denied: []
+  - name: china-asn-list.csv # name of list (must be unique)
+    type: csv # type (csv)
+    column: 0 # column to read (0 = first column)
+    url: https://raw.githubusercontent.com/missuo/ASN-China/main/ASN.China.list # url to fetch
 # ip list settings
 ip_allow_lists: []
-ip_deny_lists: []
+ip_deny_lists:
+  - name: continent-asia.list
+    url: https://raw.githubusercontent.com/cbuijs/ipasn/master/continent-asia.list

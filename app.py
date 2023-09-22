@@ -28,6 +28,8 @@ class app:
         self._load_settings()
         # check asn block and allow lists
         self.update_asn_lists()
+        # check ip block and allow lists
+        self.update_ip_lists()
         # collapse ip addresses to save space
         self._collapse_ipv4_addresses()
         # create ufw user rules
@@ -55,6 +57,8 @@ class app:
                 logging.info('parsing %s', item['name'])
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
+                        if '//' in line:
+                            line = line.split('//')[0]
                         try:
                             asn = re.sub(
                                 r'\W+', '', line.strip().split(',')[
@@ -82,6 +86,8 @@ class app:
                 logging.info('parsing %s', item['name'])
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
+                        if '//' in line:
+                            line = line.split('//')[0]
                         try:
                             asn = re.sub(
                                 r'\W+', '', line.strip().split(',')[
@@ -95,6 +101,49 @@ class app:
                         ips = self._get_ips_from_asn(asn)
                         # add ips to allow list specific to ipv4 or ipv6
                         self._add_ips_to_allow_list(ips)
+
+    def update_ip_lists(self):
+        logging.info('updating ip lists')
+        # update deny lists
+        for item in self.settings['ip_deny_lists']:
+            logging.info('updating %s', item['name'])
+            # download deny list
+            self._download_file_to_dir(
+                item['url'],
+                'tmp/ip_lists',
+                item['name']
+            )
+            # parse deny list
+            logging.info('parsing %s', item['name'])
+            with open('tmp/ip_lists/{}'.format(item['name']), 'r') as file:
+                ips = []
+                for line in file:
+                    try:
+                        ips.append(line.strip())
+                    except:
+                        logging.error('could not parse line: %s', line)
+                # add ips to deny list specific to ipv4 or ipv6
+                self._add_ips_to_deny_list(ips)
+        # update allow lists
+        for item in self.settings['ip_allow_lists']:
+            logging.info('updating %s', item['name'])
+            # download deny list
+            self._download_file_to_dir(
+                item['url'],
+                'tmp/ip_lists',
+                item['name']
+            )
+            # parse deny list
+            logging.info('parsing %s', item['name'])
+            with open('tmp/ip_lists/{}'.format(item['name']), 'r') as file:
+                ips = []
+                for line in file:
+                    try:
+                        ips.append(line.strip())
+                    except:
+                        logging.error('could not parse line: %s', line)
+                # add ips to allow list specific to ipv4 or ipv6
+                self._add_ips_to_allow_list(ips)
 
     def create_ipv4_ufw_user_rules(self):
         logging.info('creating ipv4 ufw user rules')
