@@ -46,14 +46,16 @@ class app:
         # update deny lists
         for item in self.settings['asn_deny_lists']:
             logging.info('updating %s', item['name'])
-            # download deny list
-            self._download_file_to_dir(
-                item['url'],
-                'tmp/asn_lists',
-                item['name']
-            )
+            # download if not local file
+            if not 'local' in item['type']:
+                # download deny list
+                self._download_file_to_dir(
+                    item['url'],
+                    'tmp/asn_lists',
+                    item['name']
+                )
             # parse deny list type csv
-            if item['type'] == 'csv':
+            if 'csv' in item['type']:
                 logging.info('parsing %s', item['name'])
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
@@ -66,6 +68,7 @@ class app:
                             )
                         except:
                             logging.error('could not parse line: %s', line)
+                            continue
                         # download asn
                         self._get_asn([asn])
                         # get ips from asn
@@ -75,14 +78,16 @@ class app:
         # update allow lists
         for item in self.settings['asn_allow_lists']:
             logging.info('updating %s', item['name'])
-            # download allow list
-            self._download_file_to_dir(
-                item['url'],
-                'tmp/asn_lists',
-                item['name']
-            )
+            # download if not local file
+            if not 'local' in item['type']:
+                # download allow list
+                self._download_file_to_dir(
+                    item['url'],
+                    'tmp/asn_lists',
+                    item['name']
+                )
             # parse allow list type csv
-            if item['type'] == 'csv':
+            if 'csv' in item['type']:
                 logging.info('parsing %s', item['name'])
                 with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
                     for line in file:
@@ -95,6 +100,7 @@ class app:
                             )
                         except:
                             logging.error('could not parse line: %s', line)
+                            continue
                         # download asn
                         self._get_asn([asn])
                         # get ips from asn
@@ -347,7 +353,7 @@ class app:
             )
 
     def _get_ips_from_asn(self, asn):
-        logging.info('parsing %s', '{}.txt'.format(asn))
+        logging.info('parsing asn %s', '{}.txt'.format(asn))
         ips = []
         with open('tmp/asns/{}.txt'.format(asn), 'r') as file:
             for line in file:
