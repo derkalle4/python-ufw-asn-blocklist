@@ -57,24 +57,27 @@ class app:
             # parse deny list type csv
             if 'csv' in item['type']:
                 logging.info('parsing %s', item['name'])
-                with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
-                    for line in file:
-                        if '//' in line:
-                            line = line.split('//')[0]
-                        try:
-                            asn = re.sub(
-                                r'\W+', '', line.strip().split(',')[
-                                    item['column']]
-                            )
-                        except:
-                            logging.error('could not parse line: %s', line)
-                            continue
-                        # download asn
-                        self._get_asn([asn])
-                        # get ips from asn
-                        ips = self._get_ips_from_asn(asn)
-                        # add ips to deny list specific to ipv4 or ipv6
-                        self._add_ips_to_deny_list(ips)
+                try:
+                    with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
+                        for line in file:
+                            if '//' in line:
+                                line = line.split('//')[0]
+                            try:
+                                asn = re.sub(
+                                    r'\W+', '', line.strip().split(',')[
+                                        item['column']]
+                                )
+                            except:
+                                logging.error('could not parse line: %s', line)
+                                continue
+                            # download asn
+                            self._get_asn([asn])
+                            # get ips from asn
+                            ips = self._get_ips_from_asn(asn)
+                            # add ips to deny list specific to ipv4 or ipv6
+                            self._add_ips_to_deny_list(ips)
+                except Exception as exc:
+                    logging.error('could not open asn_list file: %s', exc)
         # update allow lists
         for item in self.settings['asn_allow_lists']:
             logging.info('updating %s', item['name'])
@@ -89,24 +92,27 @@ class app:
             # parse allow list type csv
             if 'csv' in item['type']:
                 logging.info('parsing %s', item['name'])
-                with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
-                    for line in file:
-                        if '//' in line:
-                            line = line.split('//')[0]
-                        try:
-                            asn = re.sub(
-                                r'\W+', '', line.strip().split(',')[
-                                    item['column']]
-                            )
-                        except:
-                            logging.error('could not parse line: %s', line)
-                            continue
-                        # download asn
-                        self._get_asn([asn])
-                        # get ips from asn
-                        ips = self._get_ips_from_asn(asn)
-                        # add ips to allow list specific to ipv4 or ipv6
-                        self._add_ips_to_allow_list(ips)
+                try:
+                    with open('tmp/asn_lists/{}'.format(item['name']), 'r') as file:
+                        for line in file:
+                            if '//' in line:
+                                line = line.split('//')[0]
+                            try:
+                                asn = re.sub(
+                                    r'\W+', '', line.strip().split(',')[
+                                        item['column']]
+                                )
+                            except:
+                                logging.error('could not parse line: %s', line)
+                                continue
+                            # download asn
+                            self._get_asn([asn])
+                            # get ips from asn
+                            ips = self._get_ips_from_asn(asn)
+                            # add ips to allow list specific to ipv4 or ipv6
+                            self._add_ips_to_allow_list(ips)
+                except Exception as exc:
+                    logging.error('could not open asn_list file: %s', exc)
 
     def update_ip_lists(self):
         logging.info('updating ip lists')
